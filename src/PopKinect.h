@@ -58,7 +58,7 @@ public:
 	void			OnGetVideo(TJobAndChannel& JobAndChannel);
 	
 	void			SubscribeNewDepth(TJobAndChannel& JobAndChannel);
-	void			OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device);
+	bool			OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device);
 
 public:
 	Soy::Platform::TConsoleApp	mConsoleApp;

@@ -96,7 +96,7 @@ void TPopKinect::OnGetVideo(TJobAndChannel& JobAndChannel)
 	OnGetDepth( JobAndChannel );
 }
 
-void TPopKinect::OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device)
+bool TPopKinect::OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device)
 {
 	TJob OutputJob;
 	auto& Reply = OutputJob;
@@ -119,9 +119,9 @@ void TPopKinect::OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManag
 	//	std::Debug << "Got event callback to send to " << Client << std::endl;
 	
 	if ( !SubscriptionManager.SendSubscriptionJob( Reply, Client ) )
-	{
-		//	unsubscibe on failure!
-	}
+		return false;
+
+	return true;
 }
 
 
@@ -240,9 +240,9 @@ void TPopKinect::SubscribeNewDepth(TJobAndChannel& JobAndChannel)
 	
 	//	make a lambda to recieve the event
 	auto Client = Job.mChannelMeta;
-	std::function<void(TEventSubscriptionManager&,TVideoDevice&)> ListenerCallback = [this,Client](TEventSubscriptionManager& SubscriptionManager,TVideoDevice& Value)
+	TEventSubscriptionCallback<TVideoDevice> ListenerCallback = [this,Client](TEventSubscriptionManager& SubscriptionManager,TVideoDevice& Value)
 	{
-		this->OnNewDepthCallback( SubscriptionManager, Client, Value );
+		return this->OnNewDepthCallback( SubscriptionManager, Client, Value );
 	};
 	
 	//	subscribe this caller
