@@ -14,7 +14,8 @@
 
 
 
-TPopKinect::TPopKinect()
+TPopKinect::TPopKinect() :
+	mSubcriberManager	( *this )
 {
 	//	add video contaienr
 	std::shared_ptr<SoyVideoContainer> KinectContainer( new SoyFreenect() );
@@ -32,6 +33,13 @@ TPopKinect::TPopKinect()
 	
 	//	gr: this might want a serial?
 	AddJobHandler("getskeleton", TParameterTraits(), *this, &TPopKinect::OnGetSkeleton );
+
+	//	we need extra params for this subscription to say WHICH device we want to subscribe to
+	//	we create the new subscriptions
+	TParameterTraits SubscribeNewDepthTraits;
+	SubscribeNewDepthTraits.mAssumedKeys.PushBack("serial");
+	SubscribeNewDepthTraits.mDefaultParams.PushBack( std::make_tuple(std::string("command"),std::string("newdepth")) );
+	AddJobHandler("subscribenewdepth", SubscribeNewDepthTraits, *this, &TPopKinect::SubscribeNewDepth );
 }
 
 void TPopKinect::AddChannel(std::shared_ptr<TChannel> Channel)
@@ -88,6 +96,35 @@ void TPopKinect::OnGetVideo(TJobAndChannel& JobAndChannel)
 	OnGetDepth( JobAndChannel );
 }
 
+void TPopKinect::OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device)
+{
+	TJob OutputJob;
+	auto& Reply = OutputJob;
+	
+	std::stringstream Error;
+	//	grab pixels
+	auto& LastFrame = Device.GetLastFrame(Error);
+	if ( LastFrame.IsValid() )
+	{
+		auto& MemFile = LastFrame.mPixels.mMemFileArray;
+		TYPE_MemFile MemFileData( MemFile );
+		Reply.mParams.AddDefaultParam( MemFileData );
+	}
+	
+	//	add error if present (last frame could be out of date)
+	if ( !Error.str().empty() )
+		Reply.mParams.AddErrorParam( Error.str() );
+	
+	//	find channel, send to Client
+	//	std::Debug << "Got event callback to send to " << Client << std::endl;
+	
+	if ( !SubscriptionManager.SendSubscriptionJob( Reply, Client ) )
+	{
+		//	unsubscibe on failure!
+	}
+}
+
+
 void TPopKinect::OnGetDepth(TJobAndChannel& JobAndChannel)
 {
 	const TJob& Job = JobAndChannel;
@@ -113,8 +150,17 @@ void TPopKinect::OnGetDepth(TJobAndChannel& JobAndChannel)
 	auto& LastFrame = Device->GetLastFrame( Error );
 	if ( LastFrame.IsValid() )
 	{
-		TYPE_MemFile MemFile( LastFrame.mPixels.mMemFileArray );
-		Reply.mParams.AddDefaultParam( MemFile );
+		if ( AsMemFile )
+		{
+			TYPE_MemFile MemFile( LastFrame.mPixels.mMemFileArray );
+			Reply.mParams.AddDefaultParam( MemFile );
+		}
+		else
+		{
+			SoyPixels Pixels;
+			Pixels.Copy( LastFrame.mPixels );
+			Reply.mParams.AddDefaultParam( Pixels );
+		}
 	}
 	
 	//	add error if present (last frame could be out of date)
@@ -158,6 +204,69 @@ void TPopKinect::OnList(TJobAndChannel& JobAndChannel)
 }
 
 
+void TPopKinect::SubscribeNewDepth(TJobAndChannel& JobAndChannel)
+{
+	const TJob& Job = JobAndChannel;
+	TJobReply Reply( JobAndChannel );
+	
+	std::stringstream Error;
+	
+	//	get device
+	auto Serial = Job.mParams.GetParamAs<std::string>("serial");
+	auto Device = mVideoCapture.GetDevice( Serial, Error );
+	if ( !Device )
+	{
+		std::stringstream ReplyError;
+		ReplyError << "Device " << Serial << " not found " << Error.str();
+		Reply.mParams.AddErrorParam( ReplyError.str() );
+		TChannel& Channel = JobAndChannel;
+		Channel.OnJobCompleted( Reply );
+		return;
+	}
+	
+	//	create new subscription for it
+	//	gr: determine if this already exists!
+	auto EventName = Job.mParams.GetParamAs<std::string>("command");
+	auto Event = mSubcriberManager.AddEvent( Device->mOnNewFrame, EventName, Error );
+	if ( !Event )
+	{
+		std::stringstream ReplyError;
+		ReplyError << "Failed to create new event " << EventName << ". " << Error.str();
+		Reply.mParams.AddErrorParam( ReplyError.str() );
+		TChannel& Channel = JobAndChannel;
+		Channel.OnJobCompleted( Reply );
+		return;
+	}
+	
+	//	make a lambda to recieve the event
+	auto Client = Job.mChannelMeta;
+	std::function<void(TEventSubscriptionManager&,TVideoDevice&)> ListenerCallback = [this,Client](TEventSubscriptionManager& SubscriptionManager,TVideoDevice& Value)
+	{
+		this->OnNewDepthCallback( SubscriptionManager, Client, Value );
+	};
+	
+	//	subscribe this caller
+	if ( !Event->AddSubscriber( Job.mChannelMeta, ListenerCallback, Error ) )
+	{
+		std::stringstream ReplyError;
+		ReplyError << "Failed to add subscriber to event " << EventName << ". " << Error.str();
+		Reply.mParams.AddErrorParam( ReplyError.str() );
+		TChannel& Channel = JobAndChannel;
+		Channel.OnJobCompleted( Reply );
+		return;
+	}
+	
+	
+	std::stringstream ReplyString;
+	ReplyString << "OK subscribed to " << EventName;
+	Reply.mParams.AddDefaultParam( ReplyString.str() );
+	if ( !Error.str().empty() )
+		Reply.mParams.AddErrorParam( Error.str() );
+	Reply.mParams.AddParam("eventcommand", EventName);
+	
+	TChannel& Channel = JobAndChannel;
+	Channel.OnJobCompleted( Reply );
+}
 
 class TChannelLiteral : public TChannel
 {

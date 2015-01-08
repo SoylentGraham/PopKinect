@@ -5,6 +5,7 @@
 #include "TFrameContainer.h"
 #include "TFindFeatures.h"
 #include "TFIndFeaturesMatch.h"
+#include <TJobEventSubscriber.h>
 
 class TChannel;
 
@@ -55,11 +56,15 @@ public:
 	void			OnGetSkeleton(TJobAndChannel& JobAndChannel);
 	void			OnGetDepth(TJobAndChannel& JobAndChannel);
 	void			OnGetVideo(TJobAndChannel& JobAndChannel);
+	
+	void			SubscribeNewDepth(TJobAndChannel& JobAndChannel);
+	void			OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device);
 
 public:
 	Soy::Platform::TConsoleApp	mConsoleApp;
 	SoyVideoCapture		mVideoCapture;
-	
+	TSubscriberManager	mSubcriberManager;
+
 	SoyFreenect		mFreenect;
 	
 	SoySkelTrack	mSkelTrack;
