@@ -16,19 +16,21 @@
 
 TPopKinect::TPopKinect()
 {
+	//	add video contaienr
+	std::shared_ptr<SoyVideoContainer> KinectContainer( new SoyFreenect() );
+	mVideoCapture.AddContainer( KinectContainer );
+
 	AddJobHandler("list", TParameterTraits(), *this, &TPopKinect::OnList );
 	AddJobHandler("exit", TParameterTraits(), *this, &TPopKinect::OnExit );
-	AddJobHandler("getdepth", TParameterTraits(), *this, &TPopKinect::OnGetDepth );
+	
+	TParameterTraits GetXXXTraits;
+	GetXXXTraits.mAssumedKeys.PushBack("serial");
+	
+	AddJobHandler("getdepth", GetXXXTraits, *this, &TPopKinect::OnGetDepth );
+	AddJobHandler("getvideo", GetXXXTraits, *this, &TPopKinect::OnGetVideo );
+	
+	//	gr: this might want a serial?
 	AddJobHandler("getskeleton", TParameterTraits(), *this, &TPopKinect::OnGetSkeleton );
-
-	//	until the subsystem has a better solution, silently take jobs that the freenect lib will take
-	Array<std::string> FreenectJobs;
-	mFreenect.GetJobHandlerCommandList( GetArrayBridge( FreenectJobs ) );
-	for ( int i=0;	i<FreenectJobs.GetSize();	i++ )
-	{
-		auto CommandName = FreenectJobs[i];
-		AddJobHandler( CommandName, TParameterTraits(), *this, &TPopKinect::FakeJobHandler );
-	}
 }
 
 void TPopKinect::AddChannel(std::shared_ptr<TChannel> Channel)
@@ -37,8 +39,6 @@ void TPopKinect::AddChannel(std::shared_ptr<TChannel> Channel)
 		return;
 	mChannels.push_back( Channel );
 	TJobHandler::BindToChannel( *Channel );
-	
-	mFreenect.BindToChannel( *Channel );
 }
 
 void TPopKinect::OnExit(TJobAndChannel& JobAndChannel)
@@ -80,58 +80,80 @@ void TPopKinect::OnGetSkeleton(TJobAndChannel& JobAndChannel)
 }
 
 
+
+void TPopKinect::OnGetVideo(TJobAndChannel& JobAndChannel)
+{
+	//	gr: need to distinguish between depth and video on a single video device....
+	OnGetDepth( JobAndChannel );
+}
+
 void TPopKinect::OnGetDepth(TJobAndChannel& JobAndChannel)
 {
 	const TJob& Job = JobAndChannel;
-	
-	std::stringstream Error;
-	SoyPixels Pixels;
-	Pixels.Copy( mLastDepth );
-	
-	std::Debug << "GetDepth: " << Pixels.GetFormat() << std::endl;
-	//Pixels.SetFormat( SoyPixelsFormat::KinectDepth );
-	
-//	Pixels.ResizeFastSample( 100, 100 );
-	
-	
 	TJobReply Reply( JobAndChannel );
 	
+	auto Serial = Job.mParams.GetParamAs<std::string>("serial");
+	auto AsMemFile = Job.mParams.GetParamAsWithDefault<bool>("memfile",true);
+	
+	std::stringstream Error;
+	auto Device = mVideoCapture.GetDevice( Serial, Error );
+	
+	if ( !Device )
+	{
+		std::stringstream ReplyError;
+		ReplyError << "Device " << Serial << " not found " << Error.str();
+		Reply.mParams.AddErrorParam( ReplyError.str() );
+		TChannel& Channel = JobAndChannel;
+		Channel.OnJobCompleted( Reply );
+		return;
+	}
+	
+	//	grab pixels
+	auto& LastFrame = Device->GetLastFrame( Error );
+	if ( LastFrame.IsValid() )
+	{
+		TYPE_MemFile MemFile( LastFrame.mPixels.mMemFileArray );
+		Reply.mParams.AddDefaultParam( MemFile );
+	}
+	
+	//	add error if present (last frame could be out of date)
 	if ( !Error.str().empty() )
 		Reply.mParams.AddErrorParam( Error.str() );
-	else
-		Reply.mParams.AddDefaultParam( Pixels );
+	
+	//	add other stats
+	auto FrameRate = Device->GetFps();
+	auto FrameMs = Device->GetFrameMs();
+	Reply.mParams.AddParam("fps", FrameRate);
+	Reply.mParams.AddParam("framems", FrameMs );
+	Reply.mParams.AddParam("serial", Device->GetMeta().mSerial );
 	
 	TChannel& Channel = JobAndChannel;
 	Channel.OnJobCompleted( Reply );
+	
 }
 
+//	copied from TPopCapture::OnListDevices
 void TPopKinect::OnList(TJobAndChannel& JobAndChannel)
 {
-	/*
 	TJobReply Reply( JobAndChannel );
-
-	std::stringstream Error;
-	std::stringstream Output;
 	
-	Array<std::string> Serials;
-	mFreenect.GetDevices( GetArrayBridge(Serials), Error );
-		
-	for ( int i=0;	i<Serials.GetSize();	i++ )
+	Array<TVideoDeviceMeta> Metas;
+	mVideoCapture.GetDevices( GetArrayBridge(Metas) );
+	
+	std::stringstream MetasString;
+	for ( int i=0;	i<Metas.GetSize();	i++ )
 	{
+		auto& Meta = Metas[i];
 		if ( i > 0 )
-			Output << ' ';
-		Output << Serials[i];
+			MetasString << ",";
+		
+		MetasString << Meta;
 	}
-
-	if ( !Error.str().empty() )
-		Reply.mParams.AddErrorParam( Error.str() );
-
-	Reply.mParams.AddDefaultParam( Output.str() );
-
+	
+	Reply.mParams.AddDefaultParam( MetasString.str() );
+	
 	TChannel& Channel = JobAndChannel;
 	Channel.OnJobCompleted( Reply );
-	return;
-	 */
 }
 
 
@@ -223,18 +245,11 @@ TPopAppError::Type PopMain(TJobParams& Params)
 	};
 	CommandLineChannel->mOnJobSent.AddListener( RelayFunc );
 
-	//	copy texture to app for viewing
-	auto CopyDepthFunc = [&App](const SoyPixels& Pixels)
-	{
-	//	std::Debug << "new frame from device " << std::endl;
-		App.mLastDepth.Copy( Pixels );
-	};
 
 #if defined(ENABLE_NITE)
 	//	auto-init kinect if we're not using depth from open ni
 	if ( !App.mNite.mDepthFromDevice )
 	{
-		App.mFreenect.mOnDepthFrame.AddListener( CopyDepthFunc );
 
 		//	feed depth to skeleton trackers
 		App.mFreenect.mOnDepthFrame.AddListener( static_cast<SoySkeletonDetector&>(App.mNite), &SoySkeletonDetector::OnDepthFrame );

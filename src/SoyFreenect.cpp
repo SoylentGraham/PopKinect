@@ -42,128 +42,42 @@ SoyPixelsFormat::Type GetPixelFormat(freenect_depth_format Format)
 }
 
 
-
-TTempJobAndChannel::TTempJobAndChannel(TJobAndChannel& JobAndChannel) :
-	mJob		( JobAndChannel.GetJob() ),
-	mChannel	( &JobAndChannel.GetChannel() )
+SoyFreenect::SoyFreenect() :
+	SoyWorkerThread	( "SoyFreenect", SoyWorkerWaitMode::NoWait )
 {
-}
-
-
-SoyFreenect::SoyFreenect()
-{
-	TParameterTraits DeviceTraits;
-	DeviceTraits.mAssumedKeys.PushBack("device");
-	DeviceTraits.mDefaultParams.PushBack( std::make_tuple("device","0" ) );
-	
-
-	AddJobHandler("init", TParameterTraits(), *this, &SoyFreenect::OnJobInit );
-	AddJobHandler("open", DeviceTraits, *this, &SoyFreenect::OnJob );
-	AddJobHandler("close", DeviceTraits, *this, &SoyFreenect::OnJob );
-	AddJobHandler("getvideo", DeviceTraits, *this, &SoyFreenect::OnJob );
-
+	std::stringstream Error;
+	if ( !CreateContext(Error) )
+		return;
+	Start();
 }
 
 SoyFreenect::~SoyFreenect()
 {
-	if ( mThread )
-	{
-		mThread->waitForThread();
-		mThread.reset();
-	}
-}
-
-
-void SoyFreenect::OnJobInit(TJobAndChannel& JobAndChannel)
-{
-	//	request to init, if we don't have a queue, start it
-	TJobReply Reply( JobAndChannel );
+	WaitToFinish();
 	
-	if ( !mThread )
-		mThread.reset( new SoyFreenectContextLoop(*this) );
-	
-	Reply.mParams.AddDefaultParam("OK");
-	
-	TChannel& Channel = JobAndChannel;
-	Channel.OnJobCompleted( Reply );
-}
-
-void SoyFreenect::OnJob(TJobAndChannel& JobAndChannel)
-{
-	//	put in the thread's queue
-	if ( !mThread )
-	{
-		TJobReply Reply( JobAndChannel );
-		
-		Reply.mParams.AddErrorParam("Freenect not initialised");
-		
-		TChannel& Channel = JobAndChannel;
-		Channel.OnJobCompleted( Reply );
-		return;
-	}
-	
-	//	gr: what we want here is a semaphore or callback or yeild to wait for the thread to loop where can do messages
-	mThread->QueueJob( JobAndChannel );
-}
-
-/*
-void SoyFreenect::GetDevices(ArrayBridge<std::string>&& Serials,std::stringstream& Error)
-{
-	auto* Context = mThread ? mThread->mContext : nullptr;
-	if ( !Context )
-	{
-		Error << "No context";
-		return;
-	}
-	
-	int NumDevices = freenect_num_devices( Context );
-	for ( int i=0;	i<NumDevices;	i++ )
-	{
-		std::stringstream DeviceSerial;
-		DeviceSerial << i;
-		Serials.PushBack( DeviceSerial.str() );
-	}
-}
-*/
-
-SoyFreenectContextLoop::SoyFreenectContextLoop(SoyFreenect& Parent) :
-	SoyThread	( "SoyFreenectContextLoop" ),
-	mContext	( nullptr ),
-	mParent		( Parent )
-{
-	startThread();
-}
-
-SoyFreenectContextLoop::~SoyFreenectContextLoop()
-{
-	//	wait for thread?
-	
+	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
 	if ( mContext )
 	{
 		freenect_shutdown( mContext );
 		mContext = nullptr;
 	}
 }
-	
-void SoyFreenectContextLoop::threadedFunction()
+
+TVideoDeviceMeta GetMeta(struct freenect_device_attributes& Device)
 {
-	//	init context
-	freenect_usb_context* UsbContext = nullptr;
-	auto Result = freenect_init( &mContext, UsbContext );
-	if ( Result < 0 )
-	{
-		std::Debug << "freenect_init error: " << Result;
-		Soy::Assert( mContext == nullptr, "Expected null context" );
-		return;
-	}
+	TVideoDeviceMeta Meta;
+	Meta.mSerial = Device.camera_serial;
+	Meta.mVideo = true;
+	Meta.mDepth = true;
 
-	freenect_set_log_level( mContext, FREENECT_LOG_WARNING);
-	freenect_device_flags flags = (freenect_device_flags)( FREENECT_DEVICE_CAMERA );
-	freenect_select_subdevices( mContext, flags );
+	return Meta;
+}
 
-	Array<SoyFreenectDeviceMeta> DeviceMetas;
-	
+void SoyFreenect::GetDevices(ArrayBridge<TVideoDeviceMeta>& Metas)
+{
 	//	get the sub device serials
+	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
+
 	struct freenect_device_attributes* DeviceList = nullptr;
 	auto ListError = freenect_list_device_attributes( mContext, &DeviceList );
 	if ( true )
@@ -171,220 +85,92 @@ void SoyFreenectContextLoop::threadedFunction()
 		auto Device = DeviceList;
 		while ( Device )
 		{
-			auto& Meta = DeviceMetas.PushBack();
-			Meta.mSerial = Device->camera_serial;
-			Device = Device->next;
+			TVideoDeviceMeta Meta = GetMeta( *Device );
+			Metas.PushBack( Meta );
+						Device = Device->next;
 		}
 		freenect_free_device_attributes( DeviceList );
 	}
-
-	
-	std::Debug << DeviceMetas.GetSize() << " Freenect devices: ";
-	for ( int d=0;	d<DeviceMetas.GetSize();	d++ )
-	{
-		std::Debug << DeviceMetas[d].mSerial << " ";
-	}
-	std::Debug << std::endl;
-	
-	
-	while ( isThreadRunning() )
-	{
-		Sleep();
-		
-		//	process jobs
-		//	gr: can I re-use jobhandler here?
-		auto QueueJobAndChannel = mQueue.Pop();
-		while ( QueueJobAndChannel.IsValid() )
-		{
-			//	process
-			TJobAndChannel JobAndChannel( QueueJobAndChannel.mJob, *QueueJobAndChannel.mChannel );
-			auto& Command = QueueJobAndChannel.mJob.mParams.mCommand;
-			std::Debug << "Process kinect job: " << Command << std::endl;
-			if ( Command == "open" )
-				OnOpenDevice( JobAndChannel );
-			else if ( Command == "close" )
-				OnCloseDevice( JobAndChannel );
-			else if ( Command == "shutdown" )
-				OnShutdown( JobAndChannel );
-			else if ( Command == "getvideo" )
-				OnGetVideo( JobAndChannel );
-			
-			QueueJobAndChannel = mQueue.Pop();
-		}
-		
-		timeval Timeout = {0,0};
-		auto Result = freenect_process_events_timeout( mContext, &Timeout );
-		if ( Result < 0 )
-		{
-			std::Debug << "Freenect_events error: " << Result;
-			break;
-		}
-	}
 }
 
 
-bool SoyFreenectContextLoop::QueueJob(TJobAndChannel &JobAndChannel)
+bool SoyFreenect::CreateContext(std::stringstream& Error)
 {
-	TTempJobAndChannel Temp( JobAndChannel );
-	mQueue.Push( Temp );
+	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
 
-	return true;
-}
-
-void SoyFreenectContextLoop::OnOpenDevice(TJobAndChannel& JobAndChannel)
-{
-	const TJob& Job = JobAndChannel;
-	
-	std::stringstream Error;
-	int DeviceSerial;
-	if ( !Job.mParams.GetParamAs<int>("device",DeviceSerial) )
+	//	init context
+	freenect_usb_context* UsbContext = nullptr;
+	auto Result = freenect_init( &mContext, UsbContext );
+	if ( Result < 0 )
 	{
-		Error << "device not specified";
-	}
-	else
-	{
-		if ( !OpenDevice( DeviceSerial ) )
-			Error << "Error opening device";
-	}
-	
-	TJobReply Reply( JobAndChannel );
-	
-	if ( !Error.str().empty() )
-		Reply.mParams.AddErrorParam( Error.str() );
-	else
-		Reply.mParams.AddDefaultParam("OK");
-
-	TChannel& Channel = JobAndChannel;
-	Channel.OnJobCompleted( Reply );
-}
-
-void SoyFreenectContextLoop::OnCloseDevice(TJobAndChannel& JobAndChannel)
-{
-	const TJob& Job = JobAndChannel;
-	
-	std::stringstream Error;
-	int DeviceSerial;
-	if ( !Job.mParams.GetParamAs("device",DeviceSerial) )
-	{
-		Error << "device not specified";
-	}
-	else
-	{
-		CloseDevice( DeviceSerial );
-	}
-	
-	TJobReply Reply( JobAndChannel );
-	
-	if ( !Error.str().empty() )
-		Reply.mParams.AddErrorParam( Error.str() );
-	else
-		Reply.mParams.AddDefaultParam("OK");
-	
-	TChannel& Channel = JobAndChannel;
-	Channel.OnJobCompleted( Reply );
-}
-
-void SoyFreenectContextLoop::OnShutdown(TJobAndChannel& JobAndChannel)
-{
-	Shutdown();
-	
-	TJobReply Reply( JobAndChannel );
-	
-	Reply.mParams.AddDefaultParam("OK");
-	
-	TChannel& Channel = JobAndChannel;
-	Channel.OnJobCompleted( Reply );
-
-}
-
-void SoyFreenectContextLoop::OnGetVideo(TJobAndChannel& JobAndChannel)
-{
-	const TJob& Job = JobAndChannel;
-	
-	std::stringstream Error;
-	int DeviceSerial;
-	SoyPixels Pixels;
-	if ( !Job.mParams.GetParamAs("device",DeviceSerial) )
-	{
-		Error << "device not specified";
-	}
-	else
-	{
-		//	get the device
-		auto Device = mDevices.find(DeviceSerial);
-		if ( Device != mDevices.end() )
-		{
-			auto& Buffer = Device->second->mVideoBuffer;
-			if ( !Buffer.IsValid() )
-				Error << "Video data invalid" << Buffer.GetWidth() << "x" << Buffer.GetHeight() << " " << Buffer.GetFormat();
-			else
-				Pixels.Copy( Buffer );
-		}
-		else
-		{
-			Error << "Unknown device " << DeviceSerial;
-		}
-	}
-	
-	TJobReply Reply( JobAndChannel );
-	
-	if ( !Error.str().empty() )
-		Reply.mParams.AddErrorParam( Error.str() );
-	else
-		Reply.mParams.AddDefaultParam( Pixels );
-	
-	TChannel& Channel = JobAndChannel;
-	Channel.OnJobCompleted( Reply );
-}
-
-
-bool SoyFreenectContextLoop::OpenDevice(int DeviceSerial)
-{
-	//	already exists
-	if ( mDevices.find(DeviceSerial) != mDevices.end() )
-		return true;
-	
-	//	create device
-	std::shared_ptr<SoyFreenectDevice> Device( new SoyFreenectDevice(*this,DeviceSerial) );
-	if ( !Device->Open() )
+		Error << "freenect_init result: " << Result;
+		Soy::Assert( mContext == nullptr, "Expected null context" );
 		return false;
+	}
 
-	//	opened okay, save it
-	mDevices[DeviceSerial] = Device;
+	freenect_set_log_level( mContext, FREENECT_LOG_WARNING);
+	freenect_device_flags flags = (freenect_device_flags)( FREENECT_DEVICE_CAMERA );
+	freenect_select_subdevices( mContext, flags );
+
 	return true;
 }
 
-void SoyFreenectContextLoop::CloseDevice(int DeviceSerial)
+bool SoyFreenect::Iteration()
 {
-	//	doesn't exist
-	if ( mDevices.find(DeviceSerial) == mDevices.end() )
-		return;
-	
-	//	kill device
-	mDevices[DeviceSerial]->Close();
-	mDevices[DeviceSerial].reset();
-	
-	Soy::Assert(false,"Can't remember here, std::erase?");
+	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
+
+	//	gr: use this for the thread block
+	int TimeoutSecs = 1;
+	int TimeoutMicroSecs = 0;
+	timeval Timeout = {TimeoutSecs,TimeoutMicroSecs};
+	auto Result = freenect_process_events_timeout( mContext, &Timeout );
+	if ( Result < 0 )
+	{
+		std::Debug << "Freenect_events error: " << Result;
+	}
+
+	return true;
 }
 
-void SoyFreenectContextLoop::Shutdown()
+std::shared_ptr<TVideoDevice> SoyFreenect::AllocDevice(const std::string& Serial,std::stringstream& Error)
 {
-	stopThread();
+	std::shared_ptr<TVideoDevice> Device( new SoyFreenectDevice( *this, Serial, Error ) );
+	return Device;
 }
 
-SoyFreenectDevice::SoyFreenectDevice(SoyFreenectContextLoop& Parent,int Serial) :
+
+SoyFreenectDevice::SoyFreenectDevice(SoyFreenect& Parent,const std::string& Serial,std::stringstream& Error) :
+	TVideoDevice	( Serial, Error ),
 	mParent			( Parent ),
 	mSerial			( Serial )
 {
+	Open(Error);
 }
 
+TVideoDeviceMeta SoyFreenectDevice::GetMeta() const
+{
+	//	gr: maybe need to cache meta or something
+	
+	Array<TVideoDeviceMeta> Metas;
+	auto MetasBridge = GetArrayBridge(Metas);
+	mParent.GetDevices( MetasBridge );
+	auto pMeta = Metas.Find( mSerial );
 
-bool SoyFreenectDevice::Open()
+	if ( !Soy::Assert( pMeta, "Meta expected" ) )
+		return TVideoDeviceMeta();
+	
+	return *pMeta;
+}
+
+bool SoyFreenectDevice::Open(std::stringstream& Error)
 {
 	//	open device
-	auto Result = freenect_open_device( mParent.GetContext(), &mDevice, mSerial );
+	auto Result = freenect_open_device_by_camera_serial( mParent.GetContext(), &mDevice, mSerial.c_str() );
 	if ( Result < 0 )
+	{
+		Error << "Failed to open device " << Result;
 		return false;
+	}
 	
 	//	setup
 	freenect_set_led( mDevice, LED_YELLOW );
@@ -413,6 +199,7 @@ bool SoyFreenectDevice::Open()
 	*/
 	if ( !SetDepthFormat( FREENECT_RESOLUTION_MEDIUM, SoyPixelsFormat::FreenectDepth11bit ) )
 	{
+		Error << "Failed to set depth format";
 		Close();
 		return false;
 	}
@@ -503,7 +290,8 @@ void SoyFreenectDevice::OnVideo(void *rgb, uint32_t timestamp)
 	memcpy( Pixels.GetArray(), rgb, Bytes );
 
 	//	notify change
-	this->mParent.mParent.mOnVideoFrame.OnTriggered( mVideoBuffer );
+	SoyTime Timecode( static_cast<uint64>(timestamp) );
+	OnNewFrame( mVideoBuffer, Timecode );
 }
 
 
@@ -571,5 +359,6 @@ void SoyFreenectDevice::OnDepth(void *depth, uint32_t timestamp)
 	}
 	
 	//	notify change
-	this->mParent.mParent.mOnDepthFrame.OnTriggered( mDepthBuffer );
+	SoyTime Timecode( static_cast<uint64>(timestamp) );
+	OnNewFrame( mDepthBuffer, Timecode );
 }

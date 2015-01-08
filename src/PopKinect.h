@@ -54,18 +54,16 @@ public:
 	void			OnList(TJobAndChannel& JobAndChannel);
 	void			OnGetSkeleton(TJobAndChannel& JobAndChannel);
 	void			OnGetDepth(TJobAndChannel& JobAndChannel);
-
-	void			FakeJobHandler(TJobAndChannel& JobAndChannel)	{}
+	void			OnGetVideo(TJobAndChannel& JobAndChannel);
 
 public:
 	Soy::Platform::TConsoleApp	mConsoleApp;
+	SoyVideoCapture		mVideoCapture;
 	
 	SoyFreenect		mFreenect;
 	
 	SoySkelTrack	mSkelTrack;
 	SoyNite			mNite;
-	
-	SoyPixels		mLastDepth;
 };
 
 
