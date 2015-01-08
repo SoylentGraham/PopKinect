@@ -16,7 +16,7 @@ class TChannel;
 
 
 //#define ENABLE_SKELTRACK
-//#define ENABLE_FREENECT
+#define ENABLE_FREENECT
 //#define ENABLE_NITE
 
 #if defined(ENABLE_FREENECT)

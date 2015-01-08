@@ -61,6 +61,7 @@
 		FB92F32C1A5DACCD001868E8 /* libfreenect.0.5.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FB92F32B1A5DACCD001868E8 /* libfreenect.0.5.0.dylib */; };
 		FB92F3361A5DAD55001868E8 /* PopKinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB92F32E1A5DAD55001868E8 /* PopKinect.cpp */; };
 		FB92F33C1A5E909C001868E8 /* SoySkeleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB92F33A1A5E909C001868E8 /* SoySkeleton.cpp */; };
+		FB92F33D1A5E914F001868E8 /* SoyFreenect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB92F3301A5DAD55001868E8 /* SoyFreenect.cpp */; };
 		FBB328471A2E7591003DE7AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB328461A2E7591003DE7AA /* AVFoundation.framework */; };
 		FBB3284A1A2E75D4003DE7AA /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB328481A2E75D4003DE7AA /* CoreMedia.framework */; };
 		FBB3284B1A2E75D4003DE7AA /* CoreMediaIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB328491A2E75D4003DE7AA /* CoreMediaIO.framework */; };
@@ -544,6 +545,7 @@
 				FB8A06FB1A2E6B520099596C /* TestResults.cpp in Sources */,
 				FB8A065D1A2E5A7C0099596C /* SoyPixels.cpp in Sources */,
 				FB8A06211A2E5A200099596C /* memheap.cpp in Sources */,
+				FB92F33D1A5E914F001868E8 /* SoyFreenect.cpp in Sources */,
 				FB8A06541A2E5A7C0099596C /* SoyArray.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -555,6 +557,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FB8A05A61A2E57700099596C /* PopApp.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -581,6 +584,8 @@
 					"$(POP_DIR)/src/**",
 					"$(LIBFREENECT_DIR)/include",
 				);
+				LIBFREENECT_DIR = /usr/local/Cellar/libfreenect/0.5.0;
+				LIBRARY_SEARCH_PATHS = "$(LIBFREENECT_DIR)/lib";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				POP_DIR = ../NewChromantics/PopTrack/;
 				SOYLENT_DIR = ../NewChromantics/ofxSoylent/;
@@ -591,6 +596,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FB8A05A61A2E57700099596C /* PopApp.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -616,6 +622,8 @@
 					"$(POP_DIR)/src/**",
 					"$(LIBFREENECT_DIR)/include",
 				);
+				LIBFREENECT_DIR = /usr/local/Cellar/libfreenect/0.5.0;
+				LIBRARY_SEARCH_PATHS = "$(LIBFREENECT_DIR)/lib";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				POP_DIR = ../NewChromantics/PopTrack/;
 				SOYLENT_DIR = ../NewChromantics/ofxSoylent/;
@@ -625,11 +633,6 @@
 		FB8A059B1A2E54730099596C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/libfreenect/0.5.0/lib,
-				);
-				New_Setting = "";
 				PRODUCT_NAME = PopKinect;
 			};
 			name = Debug;
@@ -637,11 +640,6 @@
 		FB8A059C1A2E54730099596C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/libfreenect/0.5.0/lib,
-				);
-				New_Setting = "";
 				PRODUCT_NAME = PopKinect;
 			};
 			name = Release;
