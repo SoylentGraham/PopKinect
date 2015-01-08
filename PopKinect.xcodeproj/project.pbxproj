@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		FB6650CD1A56FD8600DF0A12 /* SoyDebug.mm in Sources */ = {isa = PBXBuildFile; fileRef = FB6650CC1A56FD8600DF0A12 /* SoyDebug.mm */; };
-		FB6650D71A5B4C2900DF0A12 /* PopRingFeature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB6650D51A5B4C2900DF0A12 /* PopRingFeature.cpp */; };
 		FB8A06211A2E5A200099596C /* memheap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A06201A2E5A200099596C /* memheap.cpp */; };
 		FB8A06531A2E5A7C0099596C /* SoyApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A06241A2E5A7C0099596C /* SoyApp.cpp */; };
 		FB8A06541A2E5A7C0099596C /* SoyArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A06261A2E5A7C0099596C /* SoyArray.cpp */; };
@@ -59,7 +58,9 @@
 		FB8A07101A2E6B520099596C /* XmlTestReporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A06EB1A2E6B520099596C /* XmlTestReporter.cpp */; };
 		FB8A07131A2E6B880099596C /* TParameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A07111A2E6B880099596C /* TParameters.cpp */; };
 		FB8A07171A2E6BBF0099596C /* sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A07151A2E6BBF0099596C /* sha1.cpp */; };
-		FB8A071A1A2E6C3E0099596C /* PopFeatures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A07181A2E6C3E0099596C /* PopFeatures.cpp */; };
+		FB92F32C1A5DACCD001868E8 /* libfreenect.0.5.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FB92F32B1A5DACCD001868E8 /* libfreenect.0.5.0.dylib */; };
+		FB92F3361A5DAD55001868E8 /* PopKinect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB92F32E1A5DAD55001868E8 /* PopKinect.cpp */; };
+		FB92F33C1A5E909C001868E8 /* SoySkeleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB92F33A1A5E909C001868E8 /* SoySkeleton.cpp */; };
 		FBB328471A2E7591003DE7AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB328461A2E7591003DE7AA /* AVFoundation.framework */; };
 		FBB3284A1A2E75D4003DE7AA /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB328481A2E75D4003DE7AA /* CoreMedia.framework */; };
 		FBB3284B1A2E75D4003DE7AA /* CoreMediaIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB328491A2E75D4003DE7AA /* CoreMediaIO.framework */; };
@@ -81,8 +82,6 @@
 
 /* Begin PBXFileReference section */
 		FB6650CC1A56FD8600DF0A12 /* SoyDebug.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SoyDebug.mm; path = src/SoyDebug.mm; sourceTree = "<group>"; };
-		FB6650D51A5B4C2900DF0A12 /* PopRingFeature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PopRingFeature.cpp; path = src/PopRingFeature.cpp; sourceTree = SOURCE_ROOT; };
-		FB6650D61A5B4C2900DF0A12 /* PopRingFeature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PopRingFeature.h; path = src/PopRingFeature.h; sourceTree = SOURCE_ROOT; };
 		FB8A05931A2E54730099596C /* PopKinect */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PopKinect; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB8A05A61A2E57700099596C /* PopApp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = PopApp.xcconfig; path = ../NewChromantics/PopTrack/PopApp.xcconfig; sourceTree = SOURCE_ROOT; };
 		FB8A06201A2E5A200099596C /* memheap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = memheap.cpp; path = ../ofxSoylent/src/memheap.cpp; sourceTree = "<group>"; };
@@ -195,8 +194,18 @@
 		FB8A07121A2E6B880099596C /* TParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TParameters.h; path = ../PopTrack/src/TParameters.h; sourceTree = "<group>"; };
 		FB8A07151A2E6BBF0099596C /* sha1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sha1.cpp; path = ../ofxSoylent/src/smallsha1/sha1.cpp; sourceTree = "<group>"; };
 		FB8A07161A2E6BBF0099596C /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = ../ofxSoylent/src/smallsha1/sha1.h; sourceTree = "<group>"; };
-		FB8A07181A2E6C3E0099596C /* PopFeatures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PopFeatures.cpp; path = src/PopFeatures.cpp; sourceTree = SOURCE_ROOT; };
-		FB8A07191A2E6C3E0099596C /* PopFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PopFeatures.h; path = src/PopFeatures.h; sourceTree = SOURCE_ROOT; };
+		FB92F32A1A5DACCD001868E8 /* libfreenect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libfreenect.h; path = /usr/local/Cellar/libfreenect/0.5.0/include/libfreenect/libfreenect.h; sourceTree = "<absolute>"; };
+		FB92F32B1A5DACCD001868E8 /* libfreenect.0.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreenect.0.5.0.dylib; path = /usr/local/Cellar/libfreenect/0.5.0/lib/libfreenect.0.5.0.dylib; sourceTree = "<absolute>"; };
+		FB92F32E1A5DAD55001868E8 /* PopKinect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PopKinect.cpp; path = src/PopKinect.cpp; sourceTree = SOURCE_ROOT; };
+		FB92F32F1A5DAD55001868E8 /* PopKinect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PopKinect.h; path = src/PopKinect.h; sourceTree = SOURCE_ROOT; };
+		FB92F3301A5DAD55001868E8 /* SoyFreenect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoyFreenect.cpp; path = src/SoyFreenect.cpp; sourceTree = SOURCE_ROOT; };
+		FB92F3311A5DAD55001868E8 /* SoyFreenect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoyFreenect.h; path = src/SoyFreenect.h; sourceTree = SOURCE_ROOT; };
+		FB92F3321A5DAD55001868E8 /* SoyNite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoyNite.cpp; path = src/SoyNite.cpp; sourceTree = SOURCE_ROOT; };
+		FB92F3331A5DAD55001868E8 /* SoyNite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoyNite.h; path = src/SoyNite.h; sourceTree = SOURCE_ROOT; };
+		FB92F3341A5DAD55001868E8 /* SoySkeltrack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoySkeltrack.cpp; path = src/SoySkeltrack.cpp; sourceTree = SOURCE_ROOT; };
+		FB92F3351A5DAD55001868E8 /* SoySkelTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoySkelTrack.h; path = src/SoySkelTrack.h; sourceTree = SOURCE_ROOT; };
+		FB92F33A1A5E909C001868E8 /* SoySkeleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoySkeleton.cpp; path = src/SoySkeleton.cpp; sourceTree = "<group>"; };
+		FB92F33B1A5E909C001868E8 /* SoySkeleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoySkeleton.h; path = src/SoySkeleton.h; sourceTree = "<group>"; };
 		FBB328461A2E7591003DE7AA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FBB328481A2E75D4003DE7AA /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FBB328491A2E75D4003DE7AA /* CoreMediaIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMediaIO.framework; path = System/Library/Frameworks/CoreMediaIO.framework; sourceTree = SDKROOT; };
@@ -214,6 +223,7 @@
 				FBB3284A1A2E75D4003DE7AA /* CoreMedia.framework in Frameworks */,
 				FBB3284B1A2E75D4003DE7AA /* CoreMediaIO.framework in Frameworks */,
 				FBB328471A2E7591003DE7AA /* AVFoundation.framework in Frameworks */,
+				FB92F32C1A5DACCD001868E8 /* libfreenect.0.5.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +238,7 @@
 				FBB328491A2E75D4003DE7AA /* CoreMediaIO.framework */,
 				FBB328461A2E7591003DE7AA /* AVFoundation.framework */,
 				FB8A05A61A2E57700099596C /* PopApp.xcconfig */,
+				FB92F32D1A5DACD2001868E8 /* libfreekinect */,
 				FB8A067B1A2E68C20099596C /* poplib */,
 				FB8A06221A2E5A280099596C /* soylib */,
 				FB8A05951A2E54730099596C /* src */,
@@ -246,10 +257,14 @@
 		FB8A05951A2E54730099596C /* src */ = {
 			isa = PBXGroup;
 			children = (
-				FB6650D51A5B4C2900DF0A12 /* PopRingFeature.cpp */,
-				FB6650D61A5B4C2900DF0A12 /* PopRingFeature.h */,
-				FB8A07181A2E6C3E0099596C /* PopFeatures.cpp */,
-				FB8A07191A2E6C3E0099596C /* PopFeatures.h */,
+				FB92F32E1A5DAD55001868E8 /* PopKinect.cpp */,
+				FB92F32F1A5DAD55001868E8 /* PopKinect.h */,
+				FB92F3301A5DAD55001868E8 /* SoyFreenect.cpp */,
+				FB92F3311A5DAD55001868E8 /* SoyFreenect.h */,
+				FB92F3321A5DAD55001868E8 /* SoyNite.cpp */,
+				FB92F3331A5DAD55001868E8 /* SoyNite.h */,
+				FB92F3341A5DAD55001868E8 /* SoySkeltrack.cpp */,
+				FB92F3351A5DAD55001868E8 /* SoySkelTrack.h */,
 			);
 			name = src;
 			path = PopCapture;
@@ -307,6 +322,8 @@
 				FB8A07121A2E6B880099596C /* TParameters.h */,
 				FB8A06A91A2E6B040099596C /* Unittest++ */,
 				FB8A069D1A2E6AF80099596C /* TChannel.cpp */,
+				FB92F33A1A5E909C001868E8 /* SoySkeleton.cpp */,
+				FB92F33B1A5E909C001868E8 /* SoySkeleton.h */,
 				FB8A069E1A2E6AF80099596C /* TChannel.h */,
 				FB8A069F1A2E6AF80099596C /* TChannelFile.cpp */,
 				FB8A06A01A2E6AF80099596C /* TChannelFile.h */,
@@ -409,6 +426,15 @@
 			name = sha1;
 			sourceTree = "<group>";
 		};
+		FB92F32D1A5DACD2001868E8 /* libfreekinect */ = {
+			isa = PBXGroup;
+			children = (
+				FB92F32A1A5DACCD001868E8 /* libfreenect.h */,
+				FB92F32B1A5DACCD001868E8 /* libfreenect.0.5.0.dylib */,
+			);
+			name = libfreekinect;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -470,8 +496,8 @@
 				FB8A06F61A2E6B520099596C /* Test.cpp in Sources */,
 				FB8A06FA1A2E6B520099596C /* TestReporterStdout.cpp in Sources */,
 				FB8A06571A2E5A7C0099596C /* SoyFilesytem.cpp in Sources */,
+				FB92F33C1A5E909C001868E8 /* SoySkeleton.cpp in Sources */,
 				FB8A06681A2E5A7C0099596C /* SoyTypes.cpp in Sources */,
-				FB8A071A1A2E6C3E0099596C /* PopFeatures.cpp in Sources */,
 				FB8A06F91A2E6B520099596C /* TestReporter.cpp in Sources */,
 				FB8A06F11A2E6B520099596C /* DeferredTestResult.cpp in Sources */,
 				FB8A07131A2E6B880099596C /* TParameters.cpp in Sources */,
@@ -504,8 +530,8 @@
 				FB8A06811A2E69340099596C /* SoyData.cpp in Sources */,
 				FB8A065F1A2E5A7C0099596C /* SoyRef.cpp in Sources */,
 				FB8A06531A2E5A7C0099596C /* SoyApp.cpp in Sources */,
+				FB92F3361A5DAD55001868E8 /* PopKinect.cpp in Sources */,
 				FB8A06F81A2E6B520099596C /* TestList.cpp in Sources */,
-				FB6650D71A5B4C2900DF0A12 /* PopRingFeature.cpp in Sources */,
 				FB8A06EE1A2E6B520099596C /* Checks.cpp in Sources */,
 				FB8A06F21A2E6B520099596C /* MemoryOutStream.cpp in Sources */,
 				FB8A06EF1A2E6B520099596C /* CurrentTest.cpp in Sources */,
@@ -549,6 +575,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SOYLENT_DIR)/src/**",
+					"$(POP_DIR)/src/**",
+					"$(LIBFREENECT_DIR)/include",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				POP_DIR = ../NewChromantics/PopTrack/;
 				SOYLENT_DIR = ../NewChromantics/ofxSoylent/;
@@ -578,6 +610,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SOYLENT_DIR)/src/**",
+					"$(POP_DIR)/src/**",
+					"$(LIBFREENECT_DIR)/include",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				POP_DIR = ../NewChromantics/PopTrack/;
 				SOYLENT_DIR = ../NewChromantics/ofxSoylent/;
@@ -587,6 +625,11 @@
 		FB8A059B1A2E54730099596C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/libfreenect/0.5.0/lib,
+				);
+				New_Setting = "";
 				PRODUCT_NAME = PopKinect;
 			};
 			name = Debug;
@@ -594,6 +637,11 @@
 		FB8A059C1A2E54730099596C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/libfreenect/0.5.0/lib,
+				);
+				New_Setting = "";
 				PRODUCT_NAME = PopKinect;
 			};
 			name = Release;
