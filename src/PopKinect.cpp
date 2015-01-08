@@ -28,6 +28,7 @@ TPopKinect::TPopKinect()
 	
 	AddJobHandler("getdepth", GetXXXTraits, *this, &TPopKinect::OnGetDepth );
 	AddJobHandler("getvideo", GetXXXTraits, *this, &TPopKinect::OnGetVideo );
+	AddJobHandler("getframe", GetXXXTraits, *this, &TPopKinect::OnGetVideo );
 	
 	//	gr: this might want a serial?
 	AddJobHandler("getskeleton", TParameterTraits(), *this, &TPopKinect::OnGetSkeleton );
@@ -227,11 +228,13 @@ TPopAppError::Type PopMain(TJobParams& Params)
 	gStdioChannel = StdioChannel;
 	auto HttpChannel = CreateChannelFromInputString("http:8080-8090", SoyRef("http") );
 	auto WebSocketChannel = CreateChannelFromInputString("ws:json:9090-9099", SoyRef("websock") );
+	auto SocksChannel = CreateChannelFromInputString("cli:7070-7079", SoyRef("socks") );
 	
 	App.AddChannel( CommandLineChannel );
 	App.AddChannel( StdioChannel );
 	App.AddChannel( HttpChannel );
 	App.AddChannel( WebSocketChannel );
+	App.AddChannel( SocksChannel );
 
 	//	when the commandline SENDs a command (a reply), send it to stdout
 	auto RelayFunc = [](TJobAndChannel& JobAndChannel)
