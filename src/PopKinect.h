@@ -64,8 +64,6 @@ public:
 	Soy::Platform::TConsoleApp	mConsoleApp;
 	SoyVideoCapture		mVideoCapture;
 	TSubscriberManager	mSubcriberManager;
-
-	SoyFreenect		mFreenect;
 	
 	SoySkelTrack	mSkelTrack;
 	SoyNite			mNite;
