@@ -120,8 +120,9 @@ bool SoyFreenect::Iteration()
 	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
 
 	//	gr: use this for the thread block
-	int TimeoutSecs = 1;
-	int TimeoutMicroSecs = 0;
+	int TimeoutMs = 10;
+	int TimeoutSecs = 0;
+	int TimeoutMicroSecs = TimeoutMs*1000;
 	timeval Timeout = {TimeoutSecs,TimeoutMicroSecs};
 	auto Result = freenect_process_events_timeout( mContext, &Timeout );
 	if ( Result < 0 )
