@@ -52,11 +52,9 @@ public:
 	freenect_context*	GetContext()	{	return mContext;	}
 
 private:
-	bool				OpenDevice(int DeviceSerial);
-	void				CloseDevice(int DeviceSerial);
-	void				Shutdown();
 	virtual bool		Iteration();
 	bool				CreateContext(std::stringstream& Error);
+	void				DestroyContext();
 
 private:
 	std::map<int,std::shared_ptr<SoyFreenectDevice>>	mDevices;

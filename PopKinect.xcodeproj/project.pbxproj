@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB31B43B1A66E18700EAA321 /* libusb-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FB31B43A1A66E18700EAA321 /* libusb-1.0.0.dylib */; };
 		FB6650CD1A56FD8600DF0A12 /* SoyDebug.mm in Sources */ = {isa = PBXBuildFile; fileRef = FB6650CC1A56FD8600DF0A12 /* SoyDebug.mm */; };
 		FB8A06211A2E5A200099596C /* memheap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A06201A2E5A200099596C /* memheap.cpp */; };
 		FB8A06531A2E5A7C0099596C /* SoyApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB8A06241A2E5A7C0099596C /* SoyApp.cpp */; };
@@ -84,6 +85,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FB31B43A1A66E18700EAA321 /* libusb-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusb-1.0.0.dylib"; path = "../../../usr/local/Cellar/libusb/1.0.19/lib/libusb-1.0.0.dylib"; sourceTree = "<group>"; };
+		FB31B43C1A66E19800EAA321 /* libusb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libusb.h; path = "../../../usr/local/Cellar/libusb/1.0.19/include/libusb-1.0/libusb.h"; sourceTree = "<group>"; };
 		FB6650CC1A56FD8600DF0A12 /* SoyDebug.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SoyDebug.mm; path = src/SoyDebug.mm; sourceTree = "<group>"; };
 		FB8A05931A2E54730099596C /* PopKinect */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PopKinect; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB8A05A61A2E57700099596C /* PopApp.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = PopApp.xcconfig; path = ../NewChromantics/PopTrack/PopApp.xcconfig; sourceTree = SOURCE_ROOT; };
@@ -229,6 +232,7 @@
 				FBB3284D1A2E75EF003DE7AA /* CoreVideo.framework in Frameworks */,
 				FBB3284A1A2E75D4003DE7AA /* CoreMedia.framework in Frameworks */,
 				FBB3284B1A2E75D4003DE7AA /* CoreMediaIO.framework in Frameworks */,
+				FB31B43B1A66E18700EAA321 /* libusb-1.0.0.dylib in Frameworks */,
 				FBB328471A2E7591003DE7AA /* AVFoundation.framework in Frameworks */,
 				FB92F32C1A5DACCD001868E8 /* libfreenect.0.5.0.dylib in Frameworks */,
 			);
@@ -440,7 +444,9 @@
 		FB92F32D1A5DACD2001868E8 /* libfreekinect */ = {
 			isa = PBXGroup;
 			children = (
+				FB31B43C1A66E19800EAA321 /* libusb.h */,
 				FB92F32A1A5DACCD001868E8 /* libfreenect.h */,
+				FB31B43A1A66E18700EAA321 /* libusb-1.0.0.dylib */,
 				FB92F32B1A5DACCD001868E8 /* libfreenect.0.5.0.dylib */,
 			);
 			name = libfreekinect;
@@ -595,9 +601,11 @@
 					"$(SOYLENT_DIR)/src/**",
 					"$(POP_DIR)/src/**",
 					"$(LIBFREENECT_DIR)/include",
+					"$(LIBUSB_DIR)/",
 				);
 				LIBFREENECT_DIR = /usr/local/Cellar/libfreenect/0.5.0;
 				LIBRARY_SEARCH_PATHS = "$(LIBFREENECT_DIR)/lib";
+				LIBUSB_DIR = "/usr/local/Cellar/libusb/1.0.19/include/libusb-1.0/";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				POP_DIR = ../NewChromantics/PopTrack/;
 				SOYLENT_DIR = ../NewChromantics/ofxSoylent/;
@@ -633,9 +641,11 @@
 					"$(SOYLENT_DIR)/src/**",
 					"$(POP_DIR)/src/**",
 					"$(LIBFREENECT_DIR)/include",
+					"$(LIBUSB_DIR)/",
 				);
 				LIBFREENECT_DIR = /usr/local/Cellar/libfreenect/0.5.0;
 				LIBRARY_SEARCH_PATHS = "$(LIBFREENECT_DIR)/lib";
+				LIBUSB_DIR = "/usr/local/Cellar/libusb/1.0.19/include/libusb-1.0/";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				POP_DIR = ../NewChromantics/PopTrack/;
 				SOYLENT_DIR = ../NewChromantics/ofxSoylent/;
@@ -645,6 +655,10 @@
 		FB8A059B1A2E54730099596C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/libusb/1.0.19/lib,
+				);
 				PRODUCT_NAME = PopKinect;
 			};
 			name = Debug;
@@ -652,6 +666,10 @@
 		FB8A059C1A2E54730099596C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/libusb/1.0.19/lib,
+				);
 				PRODUCT_NAME = PopKinect;
 			};
 			name = Release;

@@ -4,7 +4,7 @@
 #include "TJob.h"
 #include "TParameters.h"
 #include "TChannel.h"
-
+#include <libusb.h>
 
 
 freenect_video_format GetFreenectVideoFormat(SoyPixelsFormat::Type Format)
@@ -55,12 +55,7 @@ SoyFreenect::~SoyFreenect()
 {
 	WaitToFinish();
 	
-	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
-	if ( mContext )
-	{
-		freenect_shutdown( mContext );
-		mContext = nullptr;
-	}
+	DestroyContext();
 }
 
 TVideoDeviceMeta GetMeta(struct freenect_device_attributes& Device)
@@ -115,6 +110,16 @@ bool SoyFreenect::CreateContext(std::stringstream& Error)
 	return true;
 }
 
+void SoyFreenect::DestroyContext()
+{
+	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
+	if ( mContext )
+	{
+		freenect_shutdown( mContext );
+		mContext = nullptr;
+	}
+}
+
 bool SoyFreenect::Iteration()
 {
 	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
@@ -124,10 +129,15 @@ bool SoyFreenect::Iteration()
 	int TimeoutSecs = 0;
 	int TimeoutMicroSecs = TimeoutMs*1000;
 	timeval Timeout = {TimeoutSecs,TimeoutMicroSecs};
-	auto Result = freenect_process_events_timeout( mContext, &Timeout );
-	if ( Result < 0 )
+	libusb_error Result = static_cast<libusb_error>( freenect_process_events_timeout( mContext, &Timeout ) );
+	if ( Result != LIBUSB_SUCCESS )
 	{
-		std::Debug << "Freenect_events error: " << Result;
+		std::string LibUsbError = libusb_strerror(Result);
+		std::Debug << "Freenect_events error: " << LibUsbError << "(" << static_cast<int>(Result) << ")";
+
+		DestroyContext();
+		std::stringstream CreateError;
+		CreateContext( CreateError );
 	}
 
 	return true;
