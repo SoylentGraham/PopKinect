@@ -54,11 +54,10 @@ public:
 	void			OnExit(TJobAndChannel& JobAndChannel);
 	void			OnList(TJobAndChannel& JobAndChannel);
 	void			OnGetSkeleton(TJobAndChannel& JobAndChannel);
-	void			OnGetDepth(TJobAndChannel& JobAndChannel);
-	void			OnGetVideo(TJobAndChannel& JobAndChannel);
+	void			OnGetFrame(TJobAndChannel& JobAndChannel);
 	
-	void			SubscribeNewDepth(TJobAndChannel& JobAndChannel);
-	bool			OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device);
+	void			SubscribeNewFrame(TJobAndChannel& JobAndChannel);
+	bool			OnNewFrameCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device);
 
 public:
 	Soy::Platform::TConsoleApp	mConsoleApp;

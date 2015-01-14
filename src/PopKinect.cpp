@@ -24,22 +24,19 @@ TPopKinect::TPopKinect() :
 	AddJobHandler("list", TParameterTraits(), *this, &TPopKinect::OnList );
 	AddJobHandler("exit", TParameterTraits(), *this, &TPopKinect::OnExit );
 	
-	TParameterTraits GetXXXTraits;
-	GetXXXTraits.mAssumedKeys.PushBack("serial");
+	TParameterTraits GetFrameTraits;
+	GetFrameTraits.mAssumedKeys.PushBack("serial");
 	
-	AddJobHandler("getdepth", GetXXXTraits, *this, &TPopKinect::OnGetDepth );
-	AddJobHandler("getvideo", GetXXXTraits, *this, &TPopKinect::OnGetVideo );
-	AddJobHandler("getframe", GetXXXTraits, *this, &TPopKinect::OnGetVideo );
+	AddJobHandler("getframe", GetFrameTraits, *this, &TPopKinect::OnGetFrame );
 	
 	//	gr: this might want a serial?
 	AddJobHandler("getskeleton", TParameterTraits(), *this, &TPopKinect::OnGetSkeleton );
 
-	//	we need extra params for this subscription to say WHICH device we want to subscribe to
-	//	we create the new subscriptions
-	TParameterTraits SubscribeNewDepthTraits;
-	SubscribeNewDepthTraits.mAssumedKeys.PushBack("serial");
-	SubscribeNewDepthTraits.mDefaultParams.PushBack( std::make_tuple(std::string("command"),std::string("newdepth")) );
-	AddJobHandler("subscribenewdepth", SubscribeNewDepthTraits, *this, &TPopKinect::SubscribeNewDepth );
+
+	TParameterTraits SubscribeNewFrameTraits;
+	SubscribeNewFrameTraits.mAssumedKeys.PushBack("serial");
+	SubscribeNewFrameTraits.mDefaultParams.PushBack( std::make_tuple(std::string("command"),std::string("newframe")) );
+	AddJobHandler("subscribenewframe", SubscribeNewFrameTraits, *this, &TPopKinect::SubscribeNewFrame );
 }
 
 void TPopKinect::AddChannel(std::shared_ptr<TChannel> Channel)
@@ -90,13 +87,7 @@ void TPopKinect::OnGetSkeleton(TJobAndChannel& JobAndChannel)
 
 
 
-void TPopKinect::OnGetVideo(TJobAndChannel& JobAndChannel)
-{
-	//	gr: need to distinguish between depth and video on a single video device....
-	OnGetDepth( JobAndChannel );
-}
-
-bool TPopKinect::OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device)
+bool TPopKinect::OnNewFrameCallback(TEventSubscriptionManager& SubscriptionManager,TJobChannelMeta Client,TVideoDevice& Device)
 {
 	TJob OutputJob;
 	auto& Reply = OutputJob;
@@ -120,12 +111,12 @@ bool TPopKinect::OnNewDepthCallback(TEventSubscriptionManager& SubscriptionManag
 	
 	if ( !SubscriptionManager.SendSubscriptionJob( Reply, Client ) )
 		return false;
-
+	
 	return true;
 }
 
 
-void TPopKinect::OnGetDepth(TJobAndChannel& JobAndChannel)
+void TPopKinect::OnGetFrame(TJobAndChannel& JobAndChannel)
 {
 	const TJob& Job = JobAndChannel;
 	TJobReply Reply( JobAndChannel );
@@ -204,7 +195,7 @@ void TPopKinect::OnList(TJobAndChannel& JobAndChannel)
 }
 
 
-void TPopKinect::SubscribeNewDepth(TJobAndChannel& JobAndChannel)
+void TPopKinect::SubscribeNewFrame(TJobAndChannel& JobAndChannel)
 {
 	const TJob& Job = JobAndChannel;
 	TJobReply Reply( JobAndChannel );
@@ -242,7 +233,7 @@ void TPopKinect::SubscribeNewDepth(TJobAndChannel& JobAndChannel)
 	auto Client = Job.mChannelMeta;
 	TEventSubscriptionCallback<TVideoDevice> ListenerCallback = [this,Client](TEventSubscriptionManager& SubscriptionManager,TVideoDevice& Value)
 	{
-		return this->OnNewDepthCallback( SubscriptionManager, Client, Value );
+		return this->OnNewFrameCallback( SubscriptionManager, Client, Value );
 	};
 	
 	//	subscribe this caller
