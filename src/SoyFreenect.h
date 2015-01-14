@@ -14,7 +14,7 @@ class SoyFreenect;
 class SoyFreenectDevice : public TVideoDevice
 {
 public:
-	SoyFreenectDevice(SoyFreenect& Parent,const std::string& Serial,std::stringstream& Error);
+	SoyFreenectDevice(SoyFreenect& Parent,const TVideoDeviceMeta& Meta,std::stringstream& Error);
 
 	bool					Open(std::stringstream& Error);
 	void					Close();
@@ -22,6 +22,7 @@ public:
 	void					OnDepth(void *depth, uint32_t timestamp);
 	
 	virtual TVideoDeviceMeta	GetMeta() const override;
+	std::string				GetRealSerial() const;
 	
 	bool					SetVideoFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format);
 	bool					SetDepthFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format);
@@ -30,11 +31,8 @@ public:
 	freenect_frame_mode		mVideoMode;
 	SoyPixels				mVideoBuffer;
 	
-	freenect_frame_mode		mDepthMode;
-	SoyPixels				mDepthBuffer;
-	
 	SoyFreenect&			mParent;
-	std::string				mSerial;
+	TVideoDeviceMeta		mMeta;
 	freenect_device*		mDevice;
 };
 
@@ -47,7 +45,7 @@ public:
 	virtual ~SoyFreenect();
 	
 	virtual void							GetDevices(ArrayBridge<TVideoDeviceMeta>& Metas) override;
-	virtual std::shared_ptr<TVideoDevice>	AllocDevice(const std::string& Serial,std::stringstream& Error) override;
+	virtual std::shared_ptr<TVideoDevice>	AllocDevice(const TVideoDeviceMeta& Meta,std::stringstream& Error) override;
 	
 	freenect_context*	GetContext()	{	return mContext;	}
 

@@ -7,6 +7,9 @@
 #include <libusb.h>
 
 
+const std::string VideoPrefix = "Video";
+const std::string DepthPrefix = "Depth";
+
 freenect_video_format GetFreenectVideoFormat(SoyPixelsFormat::Type Format)
 {
 	switch ( Format )
@@ -58,31 +61,32 @@ SoyFreenect::~SoyFreenect()
 	DestroyContext();
 }
 
-TVideoDeviceMeta GetMeta(struct freenect_device_attributes& Device)
-{
-	TVideoDeviceMeta Meta;
-	Meta.mSerial = Device.camera_serial;
-	Meta.mVideo = true;
-	Meta.mDepth = true;
-
-	return Meta;
-}
-
 void SoyFreenect::GetDevices(ArrayBridge<TVideoDeviceMeta>& Metas)
 {
 	//	get the sub device serials
 	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
 
 	struct freenect_device_attributes* DeviceList = nullptr;
-	auto ListError = freenect_list_device_attributes( mContext, &DeviceList );
+	//	returns <0 on error, or number of devices.
+	freenect_list_device_attributes( mContext, &DeviceList );
 	if ( true )
 	{
 		auto Device = DeviceList;
 		while ( Device )
 		{
-			TVideoDeviceMeta Meta = GetMeta( *Device );
-			Metas.PushBack( Meta );
-						Device = Device->next;
+			//	seperate devices for seperate content
+			TVideoDeviceMeta VideoDeviceMeta;
+			VideoDeviceMeta.mSerial = VideoPrefix + Device->camera_serial;
+			VideoDeviceMeta.mVideo = true;
+			
+			TVideoDeviceMeta DepthDeviceMeta;
+			DepthDeviceMeta.mSerial = DepthPrefix + Device->camera_serial;
+			DepthDeviceMeta.mDepth = true;
+			
+			Metas.PushBack( VideoDeviceMeta );
+			Metas.PushBack( DepthDeviceMeta );
+
+			Device = Device->next;
 		}
 		freenect_free_device_attributes( DeviceList );
 	}
@@ -143,40 +147,41 @@ bool SoyFreenect::Iteration()
 	return true;
 }
 
-std::shared_ptr<TVideoDevice> SoyFreenect::AllocDevice(const std::string& Serial,std::stringstream& Error)
+std::shared_ptr<TVideoDevice> SoyFreenect::AllocDevice(const TVideoDeviceMeta& Meta,std::stringstream& Error)
 {
-	std::shared_ptr<TVideoDevice> Device( new SoyFreenectDevice( *this, Serial, Error ) );
+	std::shared_ptr<TVideoDevice> Device( new SoyFreenectDevice( *this, Meta, Error ) );
 	return Device;
 }
 
 
-SoyFreenectDevice::SoyFreenectDevice(SoyFreenect& Parent,const std::string& Serial,std::stringstream& Error) :
-	TVideoDevice	( Serial, Error ),
+SoyFreenectDevice::SoyFreenectDevice(SoyFreenect& Parent,const TVideoDeviceMeta& Meta,std::stringstream& Error) :
+	TVideoDevice	( Meta, Error ),
 	mParent			( Parent ),
-	mSerial			( Serial )
+	mMeta			( Meta )
 {
 	Open(Error);
 }
 
 TVideoDeviceMeta SoyFreenectDevice::GetMeta() const
 {
-	//	gr: maybe need to cache meta or something
-	
-	Array<TVideoDeviceMeta> Metas;
-	auto MetasBridge = GetArrayBridge(Metas);
-	mParent.GetDevices( MetasBridge );
-	auto pMeta = Metas.Find( mSerial );
+	return mMeta;
+}
 
-	if ( !Soy::Assert( pMeta, "Meta expected" ) )
-		return TVideoDeviceMeta();
-	
-	return *pMeta;
+std::string SoyFreenectDevice::GetRealSerial() const
+{
+	if ( Soy::StringBeginsWith( mMeta.mSerial, VideoPrefix, true ) )
+		return mMeta.mSerial.substr( VideoPrefix.length() );
+	if ( Soy::StringBeginsWith( mMeta.mSerial, DepthPrefix, true ) )
+		return mMeta.mSerial.substr( DepthPrefix.length() );
+
+	Soy::Assert( false, std::stringstream() << "Cannot determine real serial from " << mMeta.mSerial );
+	return std::string();
 }
 
 bool SoyFreenectDevice::Open(std::stringstream& Error)
 {
 	//	open device
-	auto Result = freenect_open_device_by_camera_serial( mParent.GetContext(), &mDevice, mSerial.c_str() );
+	auto Result = freenect_open_device_by_camera_serial( mParent.GetContext(), &mDevice, GetRealSerial().c_str() );
 	if ( Result < 0 )
 	{
 		Error << "Failed to open device " << Result;
@@ -184,6 +189,7 @@ bool SoyFreenectDevice::Open(std::stringstream& Error)
 	}
 	
 	//	setup
+	//	gr: different LED's for different modes please :)
 	freenect_set_led( mDevice, LED_YELLOW );
 	freenect_set_user( mDevice, this );
 	
@@ -258,8 +264,8 @@ bool SoyFreenectDevice::SetDepthFormat(freenect_resolution Resolution,SoyPixelsF
 	auto FreenectFormat = GetFreenectDepthFormat( Format );
 	
 	//	setup format
-	mDepthMode = freenect_find_depth_mode( Resolution, FreenectFormat );
-	if ( !mDepthMode.is_valid )
+	mVideoMode = freenect_find_depth_mode( Resolution, FreenectFormat );
+	if ( !mVideoMode.is_valid )
 		return false;
 	
 	/*
@@ -269,10 +275,10 @@ bool SoyFreenectDevice::SetDepthFormat(freenect_resolution Resolution,SoyPixelsF
 
 */
 	//	setup format
-	if ( !mDepthBuffer.Init( mDepthMode.width, mDepthMode.height, Format ) )
+	if ( !mVideoBuffer.Init( mVideoMode.width, mVideoMode.height, Format ) )
 		return false;
 	
-	if ( freenect_set_depth_mode( mDevice, mDepthMode ) < 0 )
+	if ( freenect_set_depth_mode( mDevice, mVideoMode ) < 0 )
 		return false;
 	
 	SoyThread::Sleep(100);
@@ -315,20 +321,20 @@ void SoyFreenectDevice::OnDepth(void *depth, uint32_t timestamp)
 		return;
 	
 	//	gr: change all this to a SoyPixelsImpl and make a copy in the event!
-	auto& Pixels = mDepthBuffer.GetPixelsArray();
+	auto& Pixels = mVideoBuffer.GetPixelsArray();
 	auto* Depth16 = static_cast<uint16*>( depth );
 	//	copy to target
-	int Bytes = std::min( mDepthMode.bytes, Pixels.GetDataSize() );
+	int Bytes = std::min( mVideoMode.bytes, Pixels.GetDataSize() );
 	memcpy( Pixels.GetArray(), Depth16, Bytes );
 	
 	static uint16 Min = ~0;
 	static uint16 Max = 0;
 
-	uint16 MaxDepth = SoyPixelsFormat::GetMaxValue( mDepthBuffer.GetFormat() );
-	uint16 InvalidDepth = SoyPixelsFormat::GetInvalidValue( mDepthBuffer.GetFormat() );
+	uint16 MaxDepth = SoyPixelsFormat::GetMaxValue( mVideoBuffer.GetFormat() );
+	uint16 InvalidDepth = SoyPixelsFormat::GetInvalidValue( mVideoBuffer.GetFormat() );
 
 	
-	for ( int i=0;	i<mDepthMode.bytes/2;	i++ )
+	for ( int i=0;	i<mVideoMode.bytes/2;	i++ )
 	{
 		auto Depth = Depth16[i];
 		if ( Depth == 0 )
@@ -371,5 +377,5 @@ void SoyFreenectDevice::OnDepth(void *depth, uint32_t timestamp)
 	
 	//	notify change
 	SoyTime Timecode( static_cast<uint64>(timestamp) );
-	OnNewFrame( mDepthBuffer, Timecode );
+	OnNewFrame( mVideoBuffer, Timecode );
 }
