@@ -46,7 +46,8 @@ SoyPixelsFormat::Type GetPixelFormat(freenect_depth_format Format)
 
 
 SoyFreenect::SoyFreenect() :
-	SoyWorkerThread	( "SoyFreenect", SoyWorkerWaitMode::NoWait )
+	SoyWorkerThread	( "SoyFreenect", SoyWorkerWaitMode::NoWait ),
+	mContext		( nullptr )
 {
 	std::stringstream Error;
 	if ( !CreateContext(Error) )
@@ -96,6 +97,10 @@ void SoyFreenect::GetDevices(ArrayBridge<TVideoDeviceMeta>& Metas)
 bool SoyFreenect::CreateContext(std::stringstream& Error)
 {
 	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
+	
+	//	already created
+	if ( mContext )
+		return true;
 
 	//	init context
 	freenect_usb_context* UsbContext = nullptr;
@@ -126,8 +131,20 @@ void SoyFreenect::DestroyContext()
 
 bool SoyFreenect::Iteration()
 {
+	if ( !mContext )
+		return true;
+	
 	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
-
+	
+	/*	gr: creating out of main thread is causing problems??
+	//	recreate context if required
+	std::stringstream Error;
+	if ( !CreateContext(Error) )
+	{
+		std::Debug << "Re-creating context failed: " << Error.str() << std::endl;
+		return true;
+	}
+*/
 	//	gr: use this for the thread block
 	int TimeoutMs = 10;
 	int TimeoutSecs = 0;
@@ -140,8 +157,6 @@ bool SoyFreenect::Iteration()
 		std::Debug << "Freenect_events error: " << LibUsbError << "(" << static_cast<int>(Result) << ")";
 
 		DestroyContext();
-		std::stringstream CreateError;
-		CreateContext( CreateError );
 	}
 
 	return true;
@@ -181,43 +196,65 @@ std::string SoyFreenectDevice::GetRealSerial() const
 bool SoyFreenectDevice::Open(std::stringstream& Error)
 {
 	//	open device
-	auto Result = freenect_open_device_by_camera_serial( mParent.GetContext(), &mDevice, GetRealSerial().c_str() );
+	auto RealSerial = GetRealSerial();
+	auto Result = freenect_open_device_by_camera_serial( mParent.GetContext(), &mDevice, RealSerial.c_str() );
 	if ( Result < 0 )
 	{
 		Error << "Failed to open device " << Result;
 		return false;
 	}
-	
-	//	setup
-	//	gr: different LED's for different modes please :)
-	freenect_set_led( mDevice, LED_YELLOW );
+
+	auto OldUserData = freenect_get_user(mDevice);
+	//	set user info - is this shared for the same device? or is mDevice isntanced?
+	std::Debug << "Opened freenect device (" << mDevice << ") from serial " << mMeta.mSerial << "; old user data: " << OldUserData << std::endl;
 	freenect_set_user( mDevice, this );
-	
-	auto VideoCallback = [](freenect_device *dev, void *rgb, uint32_t timestamp)
+
+	//	gr: where do we get this config from?
+	auto Resolution = FREENECT_RESOLUTION_MEDIUM;
+
+	if ( mMeta.mVideo )
 	{
-		SoyFreenectDevice* This = reinterpret_cast<SoyFreenectDevice*>( freenect_get_user(dev) );
-		This->OnVideo( rgb, timestamp );
-	};
-	freenect_set_video_callback( mDevice, VideoCallback );
-	
-	auto DepthCallback = [](freenect_device *dev, void *rgb, uint32_t timestamp)
-	{
-		SoyFreenectDevice* This = reinterpret_cast<SoyFreenectDevice*>( freenect_get_user(dev) );
-		This->OnDepth( rgb, timestamp );
-	};
-	freenect_set_depth_callback( mDevice, DepthCallback );
-	
-	/*
-	if ( !SetVideoFormat( FREENECT_RESOLUTION_MEDIUM, SoyPixelsFormat::RGB ) )
-	{
-		Close();
-		return false;
+		freenect_set_led( mDevice, LED_RED );
+		
+		auto VideoCallback = [](freenect_device *dev, void *rgb, uint32_t timestamp)
+		{
+			std::Debug << "video callback" << std::endl;
+			SoyFreenectDevice* This = reinterpret_cast<SoyFreenectDevice*>( freenect_get_user(dev) );
+			This->OnVideo( rgb, timestamp );
+		};
+		freenect_set_video_callback( mDevice, VideoCallback );
+		
+		auto PixelFormat = SoyPixelsFormat::RGB;
+		if ( !SetVideoFormat( Resolution, SoyPixelsFormat::RGB ) )
+		{
+			Error << "Failed to set video format " << PixelFormat;
+			Close();
+			return false;
+		}
 	}
-	*/
-	if ( !SetDepthFormat( FREENECT_RESOLUTION_MEDIUM, SoyPixelsFormat::FreenectDepth11bit ) )
+	else if ( mMeta.mDepth )
 	{
-		Error << "Failed to set depth format";
-		Close();
+		freenect_set_led( mDevice, LED_BLINK_GREEN );
+		
+		auto DepthCallback = [](freenect_device *dev, void *rgb, uint32_t timestamp)
+		{
+			std::Debug << "depth callback" << std::endl;
+			SoyFreenectDevice* This = reinterpret_cast<SoyFreenectDevice*>( freenect_get_user(dev) );
+			This->OnDepth( rgb, timestamp );
+		};
+		freenect_set_depth_callback( mDevice, DepthCallback );
+
+		auto PixelFormat = SoyPixelsFormat::FreenectDepth11bit;
+		if ( !SetDepthFormat( Resolution, PixelFormat ) )
+		{
+			Error << "Failed to set depth format";
+			Close();
+			return false;
+		}
+	}
+	else
+	{
+		Error << "Device meta doesn't specify video or depth, so cannot create freenect device";
 		return false;
 	}
 	
@@ -227,7 +264,8 @@ bool SoyFreenectDevice::Open(std::stringstream& Error)
 bool SoyFreenectDevice::SetVideoFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format)
 {
 	//	stop current mode
-	freenect_stop_video( mDevice );
+	//	gr: commented out lets video start. maybe this is refcounted... so only turn off if we've started?
+	//freenect_stop_video( mDevice );
 
 	//	get freenect format
 	auto FreenectFormat = GetFreenectVideoFormat( Format );
