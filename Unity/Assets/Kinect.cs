@@ -48,8 +48,8 @@ public class Kinect : MonoBehaviour {
 		//	keep trying to connect
 		if (mChannel == null) {
 			mChannel = new PopUnityChannel (ServerAddress);
-			mChannel.SendJob( "subscribenewdepth serial=" + Serial + " memfile=1" );
-			mChannel.SendJob( "subscribenewframe serial=" + Serial + " memfile=1" );
+			mChannel.SendJob( "subscribenewframe serial=Depth" + Serial + " command=newdepth memfile=1" );
+			mChannel.SendJob( "subscribenewframe serial=Video" + Serial + " command=newframe memfile=1" );
 		}	
 	}
 

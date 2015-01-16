@@ -6,34 +6,65 @@
 
 
 class SoyFreenect;
+class SoyFreenectDevice;
 
 
-
-
-//	runtime device
-class SoyFreenectDevice : public TVideoDevice
+//	device per-stream which the user really recieves,
+//	pretty dumb and main device just pushes data onto it
+class SoyFreenectSubDevice : public TVideoDevice
 {
 public:
-	SoyFreenectDevice(SoyFreenect& Parent,const TVideoDeviceMeta& Meta,std::stringstream& Error);
-
-	bool					Open(std::stringstream& Error);
-	void					Close();
+	SoyFreenectSubDevice(SoyFreenectDevice& Parent,const TVideoDeviceMeta& Meta,std::stringstream& Error);
+	
 	void					OnVideo(void *rgb, uint32_t timestamp);
 	void					OnDepth(void *depth, uint32_t timestamp);
 	
-	virtual TVideoDeviceMeta	GetMeta() const override;
-	std::string				GetRealSerial() const;
+	virtual TVideoDeviceMeta	GetMeta() const override
+	{
+		return mMeta;
+	}
 	
-	bool					SetVideoFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format);
-	bool					SetDepthFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format);
+	void					OnBufferChanged(const SoyTime& Timecode)
+	{
+		OnNewFrame( mVideoBuffer, Timecode );
+	}
 	
 public:
 	freenect_frame_mode		mVideoMode;
 	SoyPixels				mVideoBuffer;
 	
-	SoyFreenect&			mParent;
+	SoyFreenectDevice&		mParent;
 	TVideoDeviceMeta		mMeta;
+};
+
+
+
+//	runtime device
+class SoyFreenectDevice
+{
+public:
+	SoyFreenectDevice(SoyFreenect& Parent,const std::string& Serial,std::stringstream& Error);
+
+	std::shared_ptr<SoyFreenectSubDevice>	GetVideoDevice(TVideoQuality::Type Quality,std::stringstream& Error);
+	std::shared_ptr<SoyFreenectSubDevice>	GetDepthDevice(TVideoQuality::Type Quality,std::stringstream& Error);
+	
+	bool					Open(bool Video,bool Depth,std::stringstream& Error);
+	void					CloseVideoDevice();
+	void					CloseDepthDevice();
+	
+	void					OnVideo(void *rgb, uint32_t timestamp);
+	void					OnDepth(void *depth, uint32_t timestamp);
+	
+	bool					SetVideoFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format);
+	bool					SetDepthFormat(freenect_resolution Resolution,SoyPixelsFormat::Type Format);
+	
+public:
+	SoyFreenect&			mParent;
 	freenect_device*		mDevice;
+	std::string				mSerial;
+
+	std::shared_ptr<SoyFreenectSubDevice>	mVideoDevice;
+	std::shared_ptr<SoyFreenectSubDevice>	mDepthDevice;
 };
 
 
@@ -54,8 +85,12 @@ private:
 	bool				CreateContext(std::stringstream& Error);
 	void				DestroyContext();
 
-private:
-	std::map<int,std::shared_ptr<SoyFreenectDevice>>	mDevices;
+	//	get/create device for this serial
+	std::shared_ptr<SoyFreenectDevice>	GetDevice(const std::string& Serial,std::stringstream& Error);
+
+	
+public:
+	Array<std::shared_ptr<SoyFreenectDevice>>	mDevices;
 	std::recursive_mutex	mContextLock;
 	freenect_context*		mContext;	//	gr: put in it's own free-me class and smart pointer and lock
 };
