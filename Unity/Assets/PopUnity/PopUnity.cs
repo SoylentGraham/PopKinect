@@ -42,7 +42,8 @@ public class PopJob
 		//	gr: strings aren't converting
 		mInterface = Interface;
 		Command = Marshal.PtrToStringAuto( Interface.sCommand );
-		Error = Marshal.PtrToStringAuto( Interface.sError );
+		if ( Interface.sError != System.IntPtr.Zero )
+			Error = Marshal.PtrToStringAuto( Interface.sError );
 	}
 
 	public int GetParam(string Param,int DefaultValue)
@@ -154,8 +155,9 @@ public class PopUnity
 	{
 		//	turn into the more clever c# class
 		PopJob Job = new PopJob( JobInterface );
-		UnityEngine.Debug.Log ("job! " + Job.Command );
-		UnityEngine.Debug.Log ("(error: " + Job.Error);
+		//UnityEngine.Debug.Log ("job! " + Job.Command );
+		if ( Job.Error != null )
+			UnityEngine.Debug.Log ("(error: " + Job.Error);
 
 		//	send job to handler
 		try
