@@ -64,6 +64,9 @@
     <ClCompile Include="..\PopTrack\src\TJobEventSubscriber.cpp">
       <Filter>Pop</Filter>
     </ClCompile>
+    <ClCompile Include="..\PopTrack\src\SoySkeleton.cpp">
+      <Filter>Pop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Soylent">
@@ -161,5 +164,13 @@
     <ClInclude Include="..\PopTrack\src\TJobEventSubscriber.h">
       <Filter>Pop</Filter>
     </ClInclude>
+    <ClInclude Include="..\PopTrack\src\SoySkeleton.h">
+      <Filter>Pop</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PopTrack\src\SoyData.inl">
+      <Filter>Soylent</Filter>
+    </None>
   </ItemGroup>
 </Project>

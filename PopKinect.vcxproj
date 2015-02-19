@@ -66,6 +66,7 @@
     <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\Win32\TimeHelpers.cpp" />
     <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\XmlTestReporter.cpp" />
     <ClCompile Include="..\ofxSoylent\src\SoyVideoDevice.cpp" />
+    <ClCompile Include="..\PopTrack\src\SoySkeleton.cpp" />
     <ClCompile Include="..\PopTrack\src\TFrameContainer.cpp" />
     <ClCompile Include="..\PopTrack\src\TJobEventSubscriber.cpp" />
     <ClCompile Include="src\PopKinect.cpp" />
@@ -132,10 +133,14 @@
     <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\Win32\TimeHelpers.h" />
     <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\XmlTestReporter.h" />
     <ClInclude Include="..\ofxSoylent\src\SoyVideoDevice.h" />
+    <ClInclude Include="..\PopTrack\src\SoySkeleton.h" />
     <ClInclude Include="..\PopTrack\src\TFrameContainer.h" />
     <ClInclude Include="..\PopTrack\src\TJobEventSubscriber.h" />
     <ClInclude Include="src\PopKinect.h" />
     <ClInclude Include="src\SoyFreenect.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PopTrack\src\SoyData.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0F77334E-9A07-4CBC-B040-712EFD1336C2}</ProjectGuid>
