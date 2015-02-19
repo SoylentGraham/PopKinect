@@ -1,30 +1,35 @@
 #pragma once
 #include <ofxSoylent.h>
+#include <TChannel.h>
 #include <SoyApp.h>
-#include "TJob.h"
-#include "TFrameContainer.h"
-#include "TFindFeatures.h"
-#include "TFIndFeaturesMatch.h"
+#include <TFindFeatures.h>
+#include <TFIndFeaturesMatch.h>
 #include <TJobEventSubscriber.h>
+#include <SoyVideoDevice.h>
 
 class TChannel;
-
-#pragma once
-#include <ofxSoylent.h>
-#include <SoyApp.h>
-#include <TJob.h>
-#include <TChannel.h>
+class TVideoDevice;
 
 
 //#define ENABLE_SKELTRACK
+#if defined(TARGET_OSX)
 #define ENABLE_FREENECT
+#endif
 //#define ENABLE_NITE
 
 #if defined(ENABLE_FREENECT)
 #include "SoyFreenect.h"
 #else
-class SoyFreenect : public TJobHandler
+class SoyFreenect : public SoyVideoContainer
 {
+public:
+	virtual void							GetDevices(ArrayBridge<TVideoDeviceMeta>& Metas)
+	{
+	}
+	virtual std::shared_ptr<TVideoDevice>	AllocDevice(const TVideoDeviceMeta& Meta, std::stringstream& Error)
+	{
+		return nullptr;
+	}
 };
 #endif
 

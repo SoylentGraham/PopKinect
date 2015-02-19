@@ -1,155 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\ofxSoylent\src\SoyDebug.cpp">
+    <ClCompile Include="src\PopKinect.cpp">
+      <Filter>PopKinect</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SOYLENT_DIR)\src\memheap.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\smallsha1\sha1.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyApp.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyArray.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyDebug.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyEvent.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyMemFile.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyPixels.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyPng.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyRef.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyString.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyThread.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyTime.cpp" />
+    <ClCompile Include="$(SOYLENT_DIR)\src\SoyTypes.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\PopMain.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\SamSound\TDevice.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\SamSound\TScene.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\SamSound\TTypes.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\SoyData.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TChannel.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TChannelFile.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TChannelPipe.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TChannelSocket.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TJob.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TJobFormat.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TJobRelay.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TParameters.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TChannelFork.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TProtocol.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TProtocolCli.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TProtocolHttp.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TProtocolJson.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TProtocolWebSocket.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\TSerialisation.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\AssertException.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\Checks.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\CurrentTest.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\DeferredTestReporter.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\DeferredTestResult.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\MemoryOutStream.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\ReportAssert.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\Test.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TestDetails.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TestList.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TestReporter.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TestReporterStdout.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TestResults.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TestRunner.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\TimeConstraint.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\Win32\TimeHelpers.cpp" />
+    <ClCompile Include="$(POP_DIR)\src\UnitTest++\src\XmlTestReporter.cpp" />
+    <ClCompile Include="..\PopTrack\src\TFrameContainer.cpp">
+      <Filter>Pop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ofxSoylent\src\SoyVideoDevice.cpp">
       <Filter>Soylent</Filter>
     </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyTime.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyTypes.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\memheap.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyMemFile.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyRef.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyPixels.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyThread.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyApp.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyEvent.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyArray.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyPng.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\SoyString.cpp">
-      <Filter>Soylent</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ofxSoylent\src\smallsha1\sha1.cpp">
-      <Filter>Soylent\smallsha1</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TChannelFile.cpp">
+    <ClCompile Include="..\PopTrack\src\TJobEventSubscriber.cpp">
       <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TChannelPipe.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TChannelSocket.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TJob.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TJobFormat.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TJobRelay.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="$(PopTrackDir)\src\TParameters.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\AssertException.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\Checks.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\CurrentTest.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\DeferredTestReporter.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\DeferredTestResult.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\MemoryOutStream.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\PopMain.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\SoyData.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TChannel.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\SamSound\TDevice.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TProtocol.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TProtocolCli.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TProtocolHttp.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TProtocolJson.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TProtocolWebSocket.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\SamSound\TScene.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\TSerialisation.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\SamSound\TTypes.cpp">
-      <Filter>Pop</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\XmlTestReporter.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\ReportAssert.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TestResults.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TestRunner.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TimeConstraint.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\Win32\TimeHelpers.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TestList.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TestReporter.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TestReporterStdout.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\Test.cpp">
-      <Filter>unittest++</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PopTrack\src\UnitTest++\src\TestDetails.cpp">
-      <Filter>unittest++</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -168,184 +81,85 @@
     <Filter Include="Soylent\smallsha1">
       <UniqueIdentifier>{5677ea4c-1d51-42f4-9882-7aac619d4da7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PopKinect">
+      <UniqueIdentifier>{f3d9b3da-33c4-4be6-a24d-94f882aea195}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ofxSoylent\src\ofxSoylent.h">
-      <Filter>Soylent</Filter>
+    <ClInclude Include="src\PopKinect.h">
+      <Filter>PopKinect</Filter>
     </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyDebug.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyTime.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyTypes.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\array.hpp">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\bufferarray.hpp">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\heaparray.hpp">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\memheap.hpp">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyMemFile.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyRef.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyPixels.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\chromium\stack_container.h">
-      <Filter>Soylent\chromium</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyThread.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyApp.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyNet.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyEvent.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyPng.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\SoyString.h">
-      <Filter>Soylent</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ofxSoylent\src\smallsha1\sha1.h">
-      <Filter>Soylent\smallsha1</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\AssertException.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\CheckMacros.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\Checks.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\Config.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\CurrentTest.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\DeferredTestReporter.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\DeferredTestResult.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\ExecuteTest.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\MemoryOutStream.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\PopMain.h">
+    <ClInclude Include="$(SOYLENT_DIR)\src\array.hpp" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\bufferarray.hpp" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\chromium\stack_container.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\heaparray.hpp" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\memheap.hpp" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\ofxSoylent.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\smallsha1\sha1.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyApp.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyDebug.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyEvent.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyMemFile.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyNet.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyPixels.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyPng.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyRef.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyString.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyThread.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyTime.h" />
+    <ClInclude Include="$(SOYLENT_DIR)\src\SoyTypes.h" />
+    <ClInclude Include="$(POP_DIR)\src\PopMain.h" />
+    <ClInclude Include="$(POP_DIR)\src\SoyData.h" />
+    <ClInclude Include="$(POP_DIR)\src\TChannel.h" />
+    <ClInclude Include="$(POP_DIR)\src\TChannelFile.h" />
+    <ClInclude Include="$(POP_DIR)\src\TChannelFork.h" />
+    <ClInclude Include="$(POP_DIR)\src\TChannelPipe.h" />
+    <ClInclude Include="$(POP_DIR)\src\TChannelSocket.h" />
+    <ClInclude Include="$(POP_DIR)\src\TJob.h" />
+    <ClInclude Include="$(POP_DIR)\src\TJobFormat.h" />
+    <ClInclude Include="$(POP_DIR)\src\TJobRelay.h" />
+    <ClInclude Include="$(POP_DIR)\src\TParameters.h" />
+    <ClInclude Include="$(POP_DIR)\src\TProtocol.h" />
+    <ClInclude Include="$(POP_DIR)\src\TProtocolCli.h" />
+    <ClInclude Include="$(POP_DIR)\src\TProtocolHttp.h" />
+    <ClInclude Include="$(POP_DIR)\src\TProtocolJson.h" />
+    <ClInclude Include="$(POP_DIR)\src\TProtocolWebSocket.h" />
+    <ClInclude Include="$(POP_DIR)\src\TSerialisation.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\AssertException.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\CheckMacros.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\Checks.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\Config.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\CurrentTest.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\DeferredTestReporter.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\DeferredTestResult.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\ExecuteTest.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\MemoryOutStream.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\ReportAssert.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\Test.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestDetails.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestList.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestMacros.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestReporter.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestReporterStdout.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestResults.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestRunner.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TestSuite.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TimeConstraint.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\TimeHelpers.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\UnitTest++.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\Win32\TimeHelpers.h" />
+    <ClInclude Include="$(POP_DIR)\src\UnitTest++\src\XmlTestReporter.h" />
+    <ClInclude Include="..\PopTrack\src\TFrameContainer.h">
       <Filter>Pop</Filter>
     </ClInclude>
-    <ClInclude Include="..\PopTrack\src\SoyData.h">
+    <ClInclude Include="..\ofxSoylent\src\SoyVideoDevice.h">
+      <Filter>Soylent</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoyFreenect.h">
+      <Filter>PopKinect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PopTrack\src\TJobEventSubscriber.h">
       <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TChannel.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TChannelFile.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TChannelPipe.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TChannelSocket.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TJob.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TJobFormat.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TJobRelay.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TParameters.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TProtocol.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TProtocolCli.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TProtocolHttp.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TProtocolJson.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TProtocolWebSocket.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\TSerialisation.h">
-      <Filter>Pop</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\UnitTest++.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\XmlTestReporter.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\ReportAssert.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\Win32\TimeHelpers.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestReporterStdout.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestResults.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestRunner.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestSuite.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TimeConstraint.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TimeHelpers.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestList.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestMacros.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestReporter.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\Test.h">
-      <Filter>unittest++</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PopTrack\src\UnitTest++\src\TestDetails.h">
-      <Filter>unittest++</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
