@@ -71,7 +71,7 @@ SoyPixelsFormat::Type GetPixelFormat(freenect_depth_format Format)
 
 
 SoyFreenect::SoyFreenect() :
-	SoyWorkerThread	( "SoyFreenect", SoyWorkerWaitMode::NoWait ),
+	SoyWorkerThread	( "SoyFreenect", SoyWorkerWaitMode::Wake ),
 	mContext		( nullptr )
 {
 	std::stringstream Error;
@@ -143,6 +143,10 @@ bool SoyFreenect::CreateContext(std::stringstream& Error)
 	freenect_device_flags flags = (freenect_device_flags)( FREENECT_DEVICE_CAMERA );
 	freenect_select_subdevices( mContext, flags );
 
+	//	make the thread work constantly
+	SetWakeMode( SoyWorkerWaitMode::NoWait );
+	Wake();
+	
 	return true;
 }
 
@@ -161,7 +165,11 @@ void SoyFreenect::DestroyContext()
 bool SoyFreenect::Iteration()
 {
 	if ( !mContext )
+	{
+		//	sleep until we get a context again
+		SetWakeMode( SoyWorkerWaitMode::Wake );
 		return true;
+	}
 	
 #if defined(ENABLE_CONTEXT_LOCK)
 	std::lock_guard<std::recursive_mutex> Lock(mContextLock);
@@ -489,54 +497,6 @@ void SoyFreenectDevice::OnDepth(void *depth, uint32_t timestamp)
 	//	copy to target
 	auto Bytes = std::min<size_t>( VideoMode.bytes, Pixels.GetDataSize() );
 	memcpy( Pixels.GetArray(), Depth16, Bytes );
-	
-	static uint16 Min = ~0;
-	static uint16 Max = 0;
-
-	uint16 MaxDepth = SoyPixelsFormat::GetMaxValue( VideoBuffer.GetFormat() );
-	uint16 InvalidDepth = SoyPixelsFormat::GetInvalidValue( VideoBuffer.GetFormat() );
-
-	
-	for ( int i=0;	i<VideoMode.bytes/2;	i++ )
-	{
-		auto Depth = Depth16[i];
-		if ( Depth == 0 )
-			continue;
-		if ( Depth == MaxDepth )
-			continue;
-		if ( Depth == InvalidDepth )
-			continue;
-		Min = std::min( Min, Depth );
-		Max = std::max( Max, Depth );
-	}
-
-	/*
-	SoyPixelsFormat::Type Format = GetPixelFormat( mDepthMode.depth_format );
-	int InvalidValue = SoyPixelsFormat::GetInvalidValue( Format );
-	
-	for ( int i=0;	i<mDepthMode.bytes/2;	i++ )
-	{
-		//	gr: instead of threshold
-		static int Threshold = 800;
-		auto& Depth = Depth16[i];
-		if ( Depth > Threshold )
-		{
-			Depth = InvalidValue;
-		}
-		else
-		{
-			//	set player id
-			Depth |= 1<<13;
-		}
-	}
-	*/
-
-	static int Counter = 0;
-	if ( (Counter++ % 60) == 0 )
-	{
-		//	11bit: min: 246, Max: 1120
-		std::Debug << "freenect min: " << Min << ", Max: " << Max << std::endl;
-	}
 	
 	//	notify change
 	SoyTime Timecode( static_cast<uint64>(timestamp) );
