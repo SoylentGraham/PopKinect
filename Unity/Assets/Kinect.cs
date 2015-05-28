@@ -55,7 +55,7 @@ public class Kinect : MonoBehaviour {
 
 	void OnDepth(PopJob Job)
 	{
-		Job.GetParam("default", GetDepthTexture() );
+		Job.GetParam("default", GetDepthTexture(), SoyPixelsFormat.Greyscale );
 	}
 	
 	void OnColour(PopJob Job)
