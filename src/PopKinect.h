@@ -54,7 +54,7 @@ class TPopKinect : public TJobHandler, public TChannelManager
 public:
 	TPopKinect();
 	
-	virtual void	AddChannel(std::shared_ptr<TChannel> Channel) override;
+	virtual bool	AddChannel(std::shared_ptr<TChannel> Channel) override;
 	
 	void			OnExit(TJobAndChannel& JobAndChannel);
 	void			OnList(TJobAndChannel& JobAndChannel);

@@ -15,7 +15,8 @@
 
 
 TPopKinect::TPopKinect() :
-	mSubcriberManager	( *this )
+	mSubcriberManager	( *this ),
+	TJobHandler			( static_cast<TChannelManager&>(*this) )
 {
 	//	add video contaienr
 	std::shared_ptr<SoyVideoContainer> KinectContainer( new SoyFreenect() );
@@ -39,12 +40,12 @@ TPopKinect::TPopKinect() :
 	AddJobHandler("subscribenewframe", SubscribeNewFrameTraits, *this, &TPopKinect::SubscribeNewFrame );
 }
 
-void TPopKinect::AddChannel(std::shared_ptr<TChannel> Channel)
+bool TPopKinect::AddChannel(std::shared_ptr<TChannel> Channel)
 {
-	if ( !Channel )
-		return;
-	mChannels.push_back( Channel );
+	if ( !TChannelManager::AddChannel(Channel) )
+		return false;
 	TJobHandler::BindToChannel( *Channel );
+	return true;
 }
 
 void TPopKinect::OnExit(TJobAndChannel& JobAndChannel)
@@ -188,7 +189,10 @@ void TPopKinect::OnList(TJobAndChannel& JobAndChannel)
 		MetasString << Meta;
 	}
 	
-	Reply.mParams.AddDefaultParam( MetasString.str() );
+	if ( !MetasString.str().empty() )
+		Reply.mParams.AddDefaultParam( MetasString.str() );
+	else
+		Reply.mParams.AddErrorParam("No devices found");
 	
 	TChannel& Channel = JobAndChannel;
 	Channel.OnJobCompleted( Reply );

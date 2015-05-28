@@ -460,7 +460,7 @@ void SoyFreenectDevice::OnVideo(void *rgb, uint32_t timestamp)
 	//std::Debug << "On video " << timestamp << std::endl;
 
 	auto& Pixels = VideoBuffer.GetPixelsArray();
-	int Bytes = std::min( VideoMode.bytes, Pixels.GetDataSize() );
+	auto Bytes = std::min<size_t>( VideoMode.bytes, Pixels.GetDataSize() );
 	memcpy( Pixels.GetArray(), rgb, Bytes );
 
 	//	notify change
@@ -487,7 +487,7 @@ void SoyFreenectDevice::OnDepth(void *depth, uint32_t timestamp)
 	auto& Pixels = VideoBuffer.GetPixelsArray();
 	auto* Depth16 = static_cast<uint16*>( depth );
 	//	copy to target
-	int Bytes = std::min( VideoMode.bytes, Pixels.GetDataSize() );
+	auto Bytes = std::min<size_t>( VideoMode.bytes, Pixels.GetDataSize() );
 	memcpy( Pixels.GetArray(), Depth16, Bytes );
 	
 	static uint16 Min = ~0;
