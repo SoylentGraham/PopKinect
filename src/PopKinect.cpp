@@ -145,7 +145,10 @@ void TPopKinect::OnGetFrame(TJobAndChannel& JobAndChannel)
 		if ( AsMemFile )
 		{
 			TYPE_MemFile MemFile( LastFrame.mPixels.mMemFileArray );
-			Reply.mParams.AddDefaultParam( MemFile );
+			TJobFormat Format;
+			Format.PushFirstContainer<SoyPixels>();
+			Format.PushFirstContainer<TYPE_MemFile>();
+			Reply.mParams.AddDefaultParam( MemFile, Format );
 		}
 		else
 		{
